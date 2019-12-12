@@ -9,6 +9,7 @@ public class Worker {
     private int maxEnergy;
     private List<WorkerActivities> schedule;
     private int currentActivityIndex = 0;
+    private boolean stuck = false;
 
     Worker(int energy) {
         this.energy = energy;
@@ -23,20 +24,37 @@ public class Worker {
     }
 
     void doTask(List<Integer> tasks) {
-        if(!tasks.isEmpty() && energy >= tasks.get(0)) {
-            if (getCurrentActivity() == WorkerActivities.working) {
-                energy -= tasks.get(0);
-                tasks.remove(0);
+        tasks.stream().findFirst().ifPresent(task -> {
+            if(haveEnoughEnergyToDoTask(task)) {
+                if (getCurrentActivity() == WorkerActivities.working) {
+                    energy -= task;
+                    tasks.remove(task);
+                }
+                goToNextActivity();
+            } else {
+                stuck = true;
             }
-            currentActivityIndex = (currentActivityIndex + 1) % schedule.size();
-        }
+        });
     }
 
     WorkerActivities getCurrentActivity() {
         return schedule.get(currentActivityIndex);
     }
 
-    void beginNextRound() {
+    boolean isStuck() {
+        return stuck;
+    }
+
+    void resetEnergy() {
         energy = maxEnergy;
+        stuck = false;
+    }
+
+    private void goToNextActivity() {
+        currentActivityIndex = (currentActivityIndex + 1) % schedule.size();
+    }
+
+    private boolean haveEnoughEnergyToDoTask(int task) {
+        return energy >= task;
     }
 }

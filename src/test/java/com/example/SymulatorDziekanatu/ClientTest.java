@@ -11,17 +11,21 @@ public class ClientTest {
 
     @Test
     void clientShouldDelegateTasksToWorker() {
+        //when
         List<Integer> tasks = new LinkedList<>(Arrays.asList(1, 2, 3));
         Client client = new Client(tasks);
         Worker worker = new Worker(99);
-        client.handle(worker);
-        client.handle(worker);
-        client.handle(worker);
+        //given
+        client.delegateTask(worker);
+        client.delegateTask(worker);
+        client.delegateTask(worker);
+        //then
         assertFalse(client.hasTasks());
     }
 
     @Test
     void clientShouldBeComparedByPriority() {
+        //when
         List<Integer> tasks = new LinkedList<>();
         Client veryImportantClient = new Client(tasks, 0);
         Client importantClient = new Client(tasks , 1);
@@ -36,7 +40,9 @@ public class ClientTest {
                 importantClient,
                 notImportantClient
         ));
+        //given
         clients.sort(Client::compareTo);
+        //then
         assertEquals(OrderedClients, clients);
     }
 }

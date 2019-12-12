@@ -10,7 +10,7 @@ import java.util.List;
 public class WorkerTest {
 
     @Test
-    void workerShouldDoTasks() {
+    void workerShouldDoTasksUntilStuck() {
         int energy = 10;
         List<Integer> tasks = new ArrayList<>(Arrays.asList(1, 4, 8));
         Worker worker = new Worker(energy);
@@ -18,8 +18,9 @@ public class WorkerTest {
         worker.doTask(tasks);
         worker.doTask(tasks);
         assertEquals(Arrays.asList(8), tasks);
+        assertEquals(true, worker.isStuck());
 
-        worker.beginNextRound();
+        worker.resetEnergy();
         worker.doTask(tasks);
         assertTrue(tasks.isEmpty());
     }

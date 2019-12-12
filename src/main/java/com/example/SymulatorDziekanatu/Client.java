@@ -16,7 +16,7 @@ public class Client implements Comparable<Client> {
         this.priority = priority;
     }
 
-    void handle(Worker worker) {
+    void delegateTask(Worker worker) {
         worker.doTask(tasks);
     }
 
