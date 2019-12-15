@@ -1,31 +1,36 @@
 package com.example.SymulatorDziekanatu;
 
-import java.util.List;
+public class Client implements IClient{
+    private TaskStrategy tasksStrategy;
+    private String type;
+    private Integer id;
+    private int waitingTime = 0;
 
-public class Client implements Comparable<Client> {
-    List<Integer> tasks;
-    private int priority;
-
-    Client(List<Integer> tasks) {
-        this.tasks = tasks;
-        this.priority = 0;
+    Client(int id, String type, TaskStrategy tasksStrategy) {
+        this.tasksStrategy = tasksStrategy;
+        this.type = type;
+        this.id = id;
     }
 
-    Client(List<Integer> tasks, int priority) {
-        this.tasks = tasks;
-        this.priority = priority;
+    public void provideWorker(Worker worker) {
+        tasksStrategy.provideWorker(worker);
     }
 
-    void delegateTask(Worker worker) {
-        worker.doTask(tasks);
+    public boolean hasTasks() {
+        return tasksStrategy.hasTasks();
     }
 
-    boolean hasTasks() {
-        return !tasks.isEmpty();
+    public String getType() {
+        return type;
     }
 
-    @Override
-    public int compareTo(Client client) {
-        return this.priority - client.priority;
+    public int getId() {return id; }
+
+    public void waitInQueue() {
+        waitingTime += 1;
+    }
+
+    public int getWaitingTime() {
+        return waitingTime;
     }
 }

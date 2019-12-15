@@ -2,86 +2,105 @@ package com.example.SymulatorDziekanatu;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.Assert.*;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class OfficeTest {
-
-    @Test
-    void shouldHandleSingleClient() {
-        //when
-        List<Worker> workers = new ArrayList<>();
-        workers.add(new Worker(5));
-        Office office = new Office(workers);
-
-        List<Integer> tasks = new ArrayList<>(Arrays.asList(2, 3 ,5));
-        Client client = new Client(tasks);
-        office.addClient(client);
-
-        //given
-        office.process();
-
-        //then
-        assertEquals(Arrays.asList(5), tasks);
-    }
+class OfficeTest {
 
     @Test
     void shouldHandleMultipleClients() {
         //when
-        List<Worker> workers = new ArrayList<>();
-        workers.add(new Worker(5));
-        Office office = new Office(workers);
-
-        List<Integer> tasks = new ArrayList<>(Arrays.asList(1, 2));
-        Client client = new Client(tasks, 1);
-        office.addClient(client);
-
-        List<Integer> tasks2 = new ArrayList<>(Arrays.asList(2, 3));
-        Client client2 = new Client(tasks2, 2);
-        office.addClient(client2);
+        Office office = new Office.Builder().withNumberOfWorkers(1).withWorkersEnergy(5).build();
 
         //given
+        office.addClient("PhD", 1,2);
+        office.addClient("Friend", 2);
+        office.addClient("Student", 1);
         office.process();
 
         //then
-        assertTrue(tasks.isEmpty());
-        assertEquals(Arrays.asList(3), tasks2);
+        assertEquals(Arrays.asList("Friend", "PhD"), office.getHandledClients());
     }
 
     @Test
     void shouldHandleMultipleClientsByMultipleWorkers() {
         //when
-        List<Worker> workers = new ArrayList<>();
-        workers.add(new Worker(5));
-        workers.add(new Worker(5));
-        Office office = new Office(workers);
-
-        List<Integer> tasks = new ArrayList<>(Arrays.asList(1, 2));
-        Client client = new Client(tasks, 1);
-        office.addClient(client);
-
-        List<Integer> tasks2 = new ArrayList<>(Arrays.asList(1, 1));
-        Client client2 = new Client(tasks2, 2);
-        office.addClient(client2);
-
-        List<Integer> tasks3 = new ArrayList<>(Arrays.asList(2, 3));
-        Client client3 = new Client(tasks3, 3);
-        office.addClient(client3);
+        Office office = new Office.Builder().withNumberOfWorkers(2).withWorkersEnergy(5).build();
 
         //given
+        office.addClient("Friend", 1,2);
+        office.addClient("PhD", 1,2);
+        office.addClient("Student", 2);
+        office.addClient("Student", 99);
+        office.addClient("Student", 99);
+        office.addClient("Student", 99);
         office.process();
 
         //then
-        assertEquals(Arrays.asList(), tasks);
-        assertEquals(Arrays.asList(), tasks2);
-        assertEquals(Arrays.asList(3), tasks3);
+        assertEquals(Arrays.asList("Friend", "PhD", "Student"), office.getHandledClients());
+        assertEquals(Arrays.asList("Student"), office.getClientsInQueue());
     }
 
-    Client createClient(int... tasksArray) {
-        List<Integer> tasks  = Arrays.stream(tasksArray).boxed().collect(Collectors.toList());
-        return new Client(tasks);
+    @Test
+    void deanShouldFireWorkerWhenCatchOnBreak() {
+        //when
+        Office office = new Office.Builder()
+                .withNumberOfWorkers(1)
+                .withWorkersEnergy(5)
+                .withWorkersSchedule(WorkerActivities.working, WorkerActivities.phone)
+                .build();
+
+        //given
+        office.addClient("Dean");
+        office.process();
+        office.process();
+
+        //then
+        assertEquals(0, office.getNumberOfWorkers());
+        assertEquals(Arrays.asList("Dean"), office.getClientsInQueue());
+    }
+
+    @Test
+    void deanShouldTakeWorkerFor4Process() {
+        //when
+        Office office = new Office.Builder().withNumberOfWorkers(1).withWorkersEnergy(5).build();
+
+        //given
+        office.addClient("Dean");
+        office.addClient("Student", 1);
+        office.process();
+        office.process();
+        office.process();
+        office.process();
+
+        //then
+        assertEquals(Arrays.asList("Dean"), office.getHandledClients());
+        assertEquals(Arrays.asList("Student"), office.getClientsInQueue());
+    }
+
+    @Test
+    void shouldGenerateCorrectReport() {
+        //when
+        Office office = new Office.Builder().withNumberOfWorkers(1).withWorkersEnergy(5).build();
+
+        //given
+        IntStream.range(0, 2).forEach(i -> {
+            office.addClient("Student", 5);
+            office.addClient("PhD", 5);
+            office.addClient("Friend", 5);
+            office.addClient("Lecturer", 5);
+            office.addClient("Professor", 5);
+        });
+        IntStream.range(0, 10).forEach(i -> {
+            office.process();
+        });
+
+        //then
+        Report report = office.getReport();
+        assertEquals(Arrays.asList(0,1), report.differentialsDegrees);
+        assertEquals(5, report.numberOfExtraTasks);
+        assertEquals(9, report.numberOfComplaints);
+        assertEquals(Arrays.asList(3.0, 3.5), report.gradeReductions);
+        assertEquals(Arrays.asList(8,9), report.numberOfBeers);
     }
 }

@@ -11,12 +11,6 @@ public class Worker {
     private int currentActivityIndex = 0;
     private boolean stuck = false;
 
-    Worker(int energy) {
-        this.energy = energy;
-        this.maxEnergy = energy;
-        this.schedule = Collections.singletonList(WorkerActivities.working);
-    }
-
     Worker(int energy, List<WorkerActivities> schedule) {
         this.energy = energy;
         this.maxEnergy = energy;
@@ -39,6 +33,11 @@ public class Worker {
 
     WorkerActivities getCurrentActivity() {
         return schedule.get(currentActivityIndex);
+    }
+
+    void exhaust() {
+        stuck = true;
+        goToNextActivity();
     }
 
     boolean isStuck() {
