@@ -6,10 +6,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import static com.example.SymulatorDziekanatu.ClientTypes.*;
 
 public class Office {
     private List<Worker> workers;
-    private HashMap<Worker, IClient> handlingMap = new HashMap<>();
+    private WorkersAllocations allocations = new WorkersAllocations();
     private List<String> handledClients = new ArrayList<>();
     private List<Worker> workersToFire = new LinkedList<>();
     private ClientsQueue clientsQueue = new ClientsQueue();
@@ -38,31 +39,30 @@ public class Office {
     }
 
     private void waitClientInQueue() {
-        Stream.of(clientsQueue.getAll(), handlingMap.values())
+        Stream.of(clientsQueue.getAll(), allocations.getClients())
                 .flatMap(list -> list.stream()).forEach(client -> client.waitInQueue());
-
     }
 
     private boolean isProcessStuck() {
-        return workers.size() == 0 || workers.stream().map(
-                w -> w.isStuck() || (!handlingMap.containsKey(w) && clientsQueue.isEmpty())
-        ).reduce((a, b) -> a && b).get();
+        return workers.isEmpty() || workers.stream().allMatch(
+                w -> w.isStuck() || (!allocations.isAllocated(w) && clientsQueue.isEmpty())
+        );
     }
 
     private void allocateFreeWorkers() {
         workers.stream().filter(
-                worker -> !handlingMap.containsKey(worker) && !clientsQueue.isEmpty()
-        ).forEach(worker -> handlingMap.put(worker, clientsQueue.poll()));
+                worker -> !allocations.isAllocated(worker) && !clientsQueue.isEmpty()
+        ).forEach(worker -> allocations.setClientForWorker(worker, clientsQueue.poll()));
     }
 
     private void processAllocatedWorkers() {
         workers.stream().filter(
-                worker -> !worker.isStuck() && handlingMap.containsKey(worker)
+                worker -> !worker.isStuck() && allocations.isAllocated(worker)
         ).forEach(worker -> {
-            IClient client = handlingMap.get(worker);
+            IClient client = allocations.getClientForWorker(worker);
             client.provideWorker(worker);
             if(!client.hasTasks()) {
-                handlingMap.remove(worker);
+                allocations.removeAllocation(worker);
                 handledClients.add(client.getType());
             }
         });
@@ -70,9 +70,9 @@ public class Office {
 
     private void executeFiring() {
         workersToFire.forEach(worker -> {
-            if(handlingMap.containsKey(worker)) {
-                clientsQueue.add(handlingMap.get(worker));
-                handlingMap.remove(worker);
+            if(allocations.isAllocated(worker)) {
+                clientsQueue.add(allocations.getClientForWorker(worker));
+                allocations.removeAllocation(worker);
             }
             workers.remove(worker);
         });
@@ -98,24 +98,27 @@ public class Office {
     Report getReport() {
         Report report = new Report();
         report.differentialsDegrees = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == "Professor")
+                .filter(c -> c.getType() == professor)
                 .map(c -> c.getWaitingTime())
                 .collect(Collectors.toList());
         report.numberOfExtraTasks = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == "Lecturer")
+                .filter(c -> c.getType() == lecturer)
                 .mapToInt(c -> c.getWaitingTime())
                 .sum();
         report.numberOfComplaints = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == "Friend")
+                .filter(c -> c.getType() == friend)
                 .mapToInt(c -> c.getWaitingTime())
                 .sum();
         report.gradeReductions = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == "PhD")
+                .filter(c -> c.getType() == PhD)
                 .map(c -> c.getWaitingTime()/2.0)
                 .collect(Collectors.toList());
         report.numberOfBeers = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == "Student")
+                .filter(c -> c.getType() == student)
                 .map(c -> c.getWaitingTime())
+                .collect(Collectors.toList());
+        report.currentWorkersActivities = workers.stream()
+                .map(worker -> worker.getCurrentActivity())
                 .collect(Collectors.toList());
         return report;
     }

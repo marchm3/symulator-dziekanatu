@@ -2,8 +2,10 @@ package com.example.SymulatorDziekanatu;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.Assert.*;
-import java.util.Arrays;
+import static java.util.Arrays.*;
 import java.util.stream.IntStream;
+import static com.example.SymulatorDziekanatu.WorkerActivities.*;
+import static com.example.SymulatorDziekanatu.ClientTypes.*;
 
 class OfficeTest {
 
@@ -13,13 +15,13 @@ class OfficeTest {
         Office office = new Office.Builder().withNumberOfWorkers(1).withWorkersEnergy(5).build();
 
         //given
-        office.addClient("PhD", 1,2);
-        office.addClient("Friend", 2);
-        office.addClient("Student", 1);
+        office.addClient(PhD, 1,2);
+        office.addClient(friend, 2);
+        office.addClient(student, 1);
         office.process();
 
         //then
-        assertEquals(Arrays.asList("Friend", "PhD"), office.getHandledClients());
+        assertEquals(asList(friend, PhD), office.getHandledClients());
     }
 
     @Test
@@ -28,17 +30,17 @@ class OfficeTest {
         Office office = new Office.Builder().withNumberOfWorkers(2).withWorkersEnergy(5).build();
 
         //given
-        office.addClient("Friend", 1,2);
-        office.addClient("PhD", 1,2);
-        office.addClient("Student", 2);
-        office.addClient("Student", 99);
-        office.addClient("Student", 99);
-        office.addClient("Student", 99);
+        office.addClient(friend, 1,2);
+        office.addClient(PhD, 1,2);
+        office.addClient(student, 2);
+        office.addClient(student, 99);
+        office.addClient(student, 99);
+        office.addClient(student, 99);
         office.process();
 
         //then
-        assertEquals(Arrays.asList("Friend", "PhD", "Student"), office.getHandledClients());
-        assertEquals(Arrays.asList("Student"), office.getClientsInQueue());
+        assertEquals(asList(friend, PhD, student), office.getHandledClients());
+        assertEquals(asList(student), office.getClientsInQueue());
     }
 
     @Test
@@ -47,17 +49,17 @@ class OfficeTest {
         Office office = new Office.Builder()
                 .withNumberOfWorkers(1)
                 .withWorkersEnergy(5)
-                .withWorkersSchedule(WorkerActivities.working, WorkerActivities.phone)
+                .withWorkersSchedule(working, phone)
                 .build();
 
         //given
-        office.addClient("Dean");
+        office.addClient(dean);
         office.process();
         office.process();
 
         //then
         assertEquals(0, office.getNumberOfWorkers());
-        assertEquals(Arrays.asList("Dean"), office.getClientsInQueue());
+        assertEquals(asList(dean), office.getClientsInQueue());
     }
 
     @Test
@@ -66,30 +68,30 @@ class OfficeTest {
         Office office = new Office.Builder().withNumberOfWorkers(1).withWorkersEnergy(5).build();
 
         //given
-        office.addClient("Dean");
-        office.addClient("Student", 1);
+        office.addClient(dean);
+        office.addClient(student, 1);
         office.process();
         office.process();
         office.process();
         office.process();
 
         //then
-        assertEquals(Arrays.asList("Dean"), office.getHandledClients());
-        assertEquals(Arrays.asList("Student"), office.getClientsInQueue());
+        assertEquals(asList(dean), office.getHandledClients());
+        assertEquals(asList(student), office.getClientsInQueue());
     }
 
     @Test
-    void shouldGenerateCorrectReport() {
+    void shouldGenerateCorrectRelieveReport() {
         //when
         Office office = new Office.Builder().withNumberOfWorkers(1).withWorkersEnergy(5).build();
 
         //given
         IntStream.range(0, 2).forEach(i -> {
-            office.addClient("Student", 5);
-            office.addClient("PhD", 5);
-            office.addClient("Friend", 5);
-            office.addClient("Lecturer", 5);
-            office.addClient("Professor", 5);
+            office.addClient(student, 5);
+            office.addClient(PhD, 5);
+            office.addClient(friend, 5);
+            office.addClient(lecturer, 5);
+            office.addClient(professor, 5);
         });
         IntStream.range(0, 10).forEach(i -> {
             office.process();
@@ -97,10 +99,41 @@ class OfficeTest {
 
         //then
         Report report = office.getReport();
-        assertEquals(Arrays.asList(0,1), report.differentialsDegrees);
+        assertEquals(asList(0,1), report.differentialsDegrees);
         assertEquals(5, report.numberOfExtraTasks);
         assertEquals(9, report.numberOfComplaints);
-        assertEquals(Arrays.asList(3.0, 3.5), report.gradeReductions);
-        assertEquals(Arrays.asList(8,9), report.numberOfBeers);
+        assertEquals(asList(3.0, 3.5), report.gradeReductions);
+        assertEquals(asList(8,9), report.numberOfBeers);
+    }
+
+    @Test
+    void shouldGenerateCorrectWorkersActivityReport() {
+        //when
+        Office office = new Office.Builder()
+                .withNumberOfWorkers(3)
+                .withWorkersEnergy(1)
+                .withWorkersSchedule(
+                        working, soup,
+                        working, smoking,
+                        working, phone
+                ).build();
+
+        //given
+        office.addClient(student, 1);
+        office.addClient(student, 1, 1);
+        office.addClient(student, 1, 1, 1);
+
+        IntStream.range(0, 5).forEach(i -> {
+            office.process();
+        });
+
+        //then
+        Report report = office.getReport();
+        assertEquals(asList(soup, smoking, phone), report.currentWorkersActivities);
+    }
+
+    @Test
+    void shouldGenerateCorrectClientsInQueueReport() {
+
     }
 }
