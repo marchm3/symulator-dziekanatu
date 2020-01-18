@@ -3,6 +3,7 @@ package com.example.SymulatorDziekanatu;
 import com.google.common.collect.Lists;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -32,6 +33,12 @@ public class Office {
             executeFiring();
         }
         waitClientInQueue();
+    }
+
+    void process(int number) {
+        IntStream.range(0, number).forEach(i -> {
+            process();
+        });
     }
 
     private void resetWorkersEnergy() {
@@ -120,6 +127,9 @@ public class Office {
         report.currentWorkersActivities = workers.stream()
                 .map(worker -> worker.getCurrentActivity())
                 .collect(Collectors.toList());
+        report.numberOfClientsInQueue = clientsQueue.getAll().size();
+        report.clientsTypeInQueueToNumberMap = clientsQueue.getAll().stream().map(client -> client.getType())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         return report;
     }
 

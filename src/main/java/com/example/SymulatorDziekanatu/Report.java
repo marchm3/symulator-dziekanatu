@@ -17,7 +17,7 @@ public class Report {
 
     public int numberOfClientsInQueue = 0;
 
-    public Map<String, Integer> clientsTypeInQueueToNumberMap = new HashMap<>();
+    public Map<String, Long> clientsTypeInQueueToNumberMap = new HashMap<>();
 
     public int theoreticalWaitingTime = 0;
 

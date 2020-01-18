@@ -70,10 +70,7 @@ class OfficeTest {
         //given
         office.addClient(dean);
         office.addClient(student, 1);
-        office.process();
-        office.process();
-        office.process();
-        office.process();
+        office.process(4);
 
         //then
         assertEquals(asList(dean), office.getHandledClients());
@@ -93,9 +90,7 @@ class OfficeTest {
             office.addClient(lecturer, 5);
             office.addClient(professor, 5);
         });
-        IntStream.range(0, 10).forEach(i -> {
-            office.process();
-        });
+        office.process(10);
 
         //then
         Report report = office.getReport();
@@ -122,10 +117,7 @@ class OfficeTest {
         office.addClient(student, 1);
         office.addClient(student, 1, 1);
         office.addClient(student, 1, 1, 1);
-
-        IntStream.range(0, 5).forEach(i -> {
-            office.process();
-        });
+        office.process(5);
 
         //then
         Report report = office.getReport();
