@@ -128,4 +128,20 @@ class OfficeTest {
     void shouldGenerateCorrectClientsInQueueReport() {
 
     }
+
+    @Test
+    void shouldGenerateCorrectTheoreticalWaitingTimeReport() {
+        //when
+        Office office = new Office.Builder()
+                .withNumberOfWorkers(2)
+                .withWorkersEnergy(3)
+                .build();
+        //given
+        office.addClient(student, 1, 2, 3);
+        office.addClient(student, 3, 3);
+        office.addClient(dean);
+        //then
+        Report report = office.getReport();
+        assertEquals(4, report.theoreticalWaitingTime);
+    }
 }

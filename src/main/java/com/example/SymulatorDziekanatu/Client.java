@@ -33,4 +33,9 @@ public class Client implements IClient{
     public int getWaitingTime() {
         return waitingTime;
     }
+
+    public int getTheoreticalProcessTime(int energyPerTurn) {
+        int theoreticalProcessTime = tasksStrategy.theoreticalProcessTime(energyPerTurn);
+        return theoreticalProcessTime;
+    }
 }

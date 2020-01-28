@@ -16,4 +16,8 @@ public class ClientTaskStrategy implements TaskStrategy {
     public boolean hasTasks() {
         return !tasks.isEmpty();
     }
+
+    public int theoreticalProcessTime(int energyPerTurn) {
+        return tasks.stream().mapToInt(Integer::intValue).sum() / energyPerTurn;
+    }
 }

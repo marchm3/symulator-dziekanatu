@@ -12,4 +12,6 @@ public interface IClient {
     void waitInQueue();
 
     int getWaitingTime();
+
+    int getTheoreticalProcessTime(int energyPerTurn);
 }

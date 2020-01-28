@@ -1,10 +1,10 @@
 package com.example.SymulatorDziekanatu;
 
 public class ClientTypes {
-    static final String dean = "Dean";
-    static final String professor = "Professor";
-    static final String lecturer = "Lecturer";
-    static final String friend = "Friend";
-    static final String PhD = "PhD";
-    static final String student = "Student";
+    public static final String dean = "Dean";
+    public static final String professor = "Professor";
+    public static final String lecturer = "Lecturer";
+    public static final String friend = "Friend";
+    public static final String PhD = "PhD";
+    public static final String student = "Student";
 }

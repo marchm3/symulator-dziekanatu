@@ -49,6 +49,10 @@ public class Worker {
         stuck = false;
     }
 
+    public int getMaxEnergy() {
+        return maxEnergy;
+    }
+
     private void goToNextActivity() {
         currentActivityIndex = (currentActivityIndex + 1) % schedule.size();
     }

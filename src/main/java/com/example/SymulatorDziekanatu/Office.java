@@ -21,11 +21,11 @@ public class Office {
         this.workers = workers;
     }
 
-    void addClient(String type, Integer... tasksDifficulty) {
+    public void addClient(String type, Integer... tasksDifficulty) {
         clientsQueue.add(clientsFactory.createClient(type, tasksDifficulty));
     }
 
-    void process() {
+    public void process() {
         resetWorkersEnergy();
         while(!isProcessStuck()) {
             allocateFreeWorkers();
@@ -35,7 +35,7 @@ public class Office {
         waitClientInQueue();
     }
 
-    void process(int number) {
+    public void process(int number) {
         IntStream.range(0, number).forEach(i -> {
             process();
         });
@@ -102,7 +102,7 @@ public class Office {
         return workers.size();
     }
 
-    Report getReport() {
+    public Report getReport() {
         Report report = new Report();
         report.differentialsDegrees = clientsFactory.getCreatedClients().stream()
                 .filter(c -> c.getType() == professor)
@@ -130,25 +130,33 @@ public class Office {
         report.numberOfClientsInQueue = clientsQueue.getAll().size();
         report.clientsTypeInQueueToNumberMap = clientsQueue.getAll().stream().map(client -> client.getType())
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        report.theoreticalWaitingTime = workers.stream()
+                .findFirst()
+                .map(worker -> worker.getMaxEnergy())
+                .map(maxEnergy -> clientsQueue.getAll().stream()
+                        .mapToInt(client -> client.getTheoreticalProcessTime(maxEnergy))
+                        .sum() / ((double)workers.size())
+                ).map(numberOfProcess -> (int)Math.ceil(numberOfProcess))
+                .orElse(-1);
         return report;
     }
 
-    static class Builder {
+    public static class Builder {
         private int numberOfWorkers = 1;
         private int workersEnergy = 5;
         private List<WorkerActivities> schedule = Arrays.asList(WorkerActivities.working);
 
-        Builder withNumberOfWorkers(int number) {
+        public Builder withNumberOfWorkers(int number) {
             numberOfWorkers = number;
             return this;
         }
 
-        Builder withWorkersEnergy(int energy) {
+        public Builder withWorkersEnergy(int energy) {
             workersEnergy = energy;
             return this;
         }
 
-        Builder withWorkersSchedule(WorkerActivities... schedule) {
+        public Builder withWorkersSchedule(WorkerActivities... schedule) {
             this.schedule = Arrays.asList(schedule);
             return this;
         }
