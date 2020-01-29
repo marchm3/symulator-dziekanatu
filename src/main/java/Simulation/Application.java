@@ -1,13 +1,13 @@
-package com.example.SymulatorDziekanatu;
+package Simulation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SymulatorDziekanatuApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SymulatorDziekanatuApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
