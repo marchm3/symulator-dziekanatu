@@ -20,7 +20,7 @@ public class ClientsFactory {
         List<Integer> tasks = Lists.newArrayList(tasksDifficulty);
         numberOfCreatedClients += 1;
         TaskStrategy taskStrategy = new ClientTaskStrategy(tasks);
-        if (type == "Dean") {
+        if (type.equals("Dean")) {
             taskStrategy = new BossTaskStrategy(office);
         }
         IClient client = new Client(numberOfCreatedClients, type, taskStrategy);
@@ -29,6 +29,6 @@ public class ClientsFactory {
     }
 
     public List<IClient> getCreatedClients() {
-        return new ArrayList<IClient>(createdClients);
+        return new ArrayList<>(createdClients);
     }
 }

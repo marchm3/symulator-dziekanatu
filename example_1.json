@@ -1,0 +1,6 @@
+{
+	"numberOfWorkers": 5,
+	"maxTaskDifficulty": 5,
+	"randomClientsPerProcess": 4,
+	"workersSchedule": ["Working", "Smoking", "Working", "Soup", "Working", "Phone"]
+}

@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 import static com.example.SymulatorDziekanatu.ClientTypes.*;
 
 @Service
-public class Simulation {
+public class SimulationService {
     Office office;
     SimulationConfig config;
     Random rand = new Random();
@@ -24,21 +24,40 @@ public class Simulation {
                 .withWorkersSchedule(config.workersSchedule)
                 .withWorkersEnergy(config.maxTaskDifficulty)
                 .build();
+        if(config.customQueue != null) {
+            config.customQueue.forEach(clientType -> {
+                office.addClient(clientType, getRandomTasks());
+            });
+        }
     }
 
     public Report getReport() {
+        if(office == null) {
+            throw new SimulationNotStartedException();
+        }
         return office.getReport();
     }
 
     public void process(int number) {
+        if(office == null) {
+            throw new SimulationNotStartedException();
+        } if(simulationEnded()) {
+            throw  new SimulationEndedException();
+        }
         IntStream.range(0, number).forEach(i -> {
             singleProcess();
         });
     }
 
     private void singleProcess() {
-        addRandomClients();
+        if(config.customQueue == null && !simulationEnded()) {
+            addRandomClients();
+        }
         office.process();
+    }
+
+    private boolean simulationEnded() {
+        return !office.hasWorkers() || (config.customQueue != null && office.getClientsInQueue().size() == 0);
     }
 
 
@@ -47,9 +66,10 @@ public class Simulation {
         List<String> clientTypes = Arrays.asList(student, PhD, friend, lecturer, professor, dean);
         IntStream.range(0, config.randomClientsPerProcess).forEach(i -> {
             int draw = rand.nextInt(100);
-            for(int j = 0; j <= clientTypes.size(); j++) {
+            for(int j = 0; j < clientTypes.size(); j++) {
                 if(draw < probability.get(j)) {
                     office.addClient(clientTypes.get(j), getRandomTasks());
+                    break;
                 } else {
                     draw -= probability.get(j);
                 }

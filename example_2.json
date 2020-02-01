@@ -1,0 +1,6 @@
+{
+	"numberOfWorkers": 2,
+	"maxTaskDifficulty": 5,
+	"customQueue": ["Student", "Student", "Professor", "Student", "Student", "Professor", "Student", "PhD", "PhD", "Student" ],
+	"workersSchedule": ["Working", "Smoking", "Working", "Working", "Working", "Phone"]
+}

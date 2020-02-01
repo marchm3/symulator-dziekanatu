@@ -13,7 +13,7 @@ public class Report {
 
     public List<Integer> differentialsDegrees = new ArrayList<>();
 
-    public List<WorkerActivities> currentWorkersActivities = new ArrayList<>();
+    public List<String> currentWorkersActivities = new ArrayList<>();
 
     public int numberOfClientsInQueue = 0;
 

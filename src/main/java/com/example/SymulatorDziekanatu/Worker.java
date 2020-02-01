@@ -7,11 +7,11 @@ public class Worker {
 
     private int energy;
     private int maxEnergy;
-    private List<WorkerActivities> schedule;
+    private List<String> schedule;
     private int currentActivityIndex = 0;
     private boolean stuck = false;
 
-    Worker(int energy, List<WorkerActivities> schedule) {
+    Worker(int energy, List<String> schedule) {
         this.energy = energy;
         this.maxEnergy = energy;
         this.schedule = schedule;
@@ -20,7 +20,7 @@ public class Worker {
     void doTask(List<Integer> tasks) {
         tasks.stream().findFirst().ifPresent(task -> {
             if(haveEnoughEnergyToDoTask(task)) {
-                if (getCurrentActivity() == WorkerActivities.working) {
+                if (getCurrentActivity().equals(WorkerActivities.working)) {
                     energy -= task;
                     tasks.remove(task);
                 }
@@ -31,7 +31,7 @@ public class Worker {
         });
     }
 
-    WorkerActivities getCurrentActivity() {
+    String getCurrentActivity() {
         return schedule.get(currentActivityIndex);
     }
 

@@ -83,13 +83,17 @@ class OfficeTest {
         Office office = new Office.Builder().withNumberOfWorkers(1).withWorkersEnergy(5).build();
 
         //given
-        IntStream.range(0, 2).forEach(i -> {
-            office.addClient(student, 5);
-            office.addClient(PhD, 5);
-            office.addClient(friend, 5);
-            office.addClient(lecturer, 5);
-            office.addClient(professor, 5);
-        });
+        office.addClient(student, 5);
+        office.addClient(student, 5);
+        office.addClient(student, 5);
+        office.addClient(PhD, 5);
+        office.addClient(PhD, 5);
+        office.addClient(friend, 5);
+        office.addClient(friend, 5);
+        office.addClient(lecturer, 5);
+        office.addClient(lecturer, 5);
+        office.addClient(professor, 5);
+        office.addClient(professor, 5);
         office.process(10);
 
         //then
@@ -98,7 +102,7 @@ class OfficeTest {
         assertEquals(5, report.numberOfExtraTasks);
         assertEquals(9, report.numberOfComplaints);
         assertEquals(asList(3.0, 3.5), report.gradeReductions);
-        assertEquals(asList(8,9), report.numberOfBeers);
+        assertEquals(asList(4,4,5), report.numberOfBeers);
     }
 
     @Test

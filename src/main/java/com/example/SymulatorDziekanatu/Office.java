@@ -41,6 +41,10 @@ public class Office {
         });
     }
 
+    public boolean hasWorkers() {
+        return workers.size() > 0;
+    }
+
     private void resetWorkersEnergy() {
         workers.forEach(Worker::resetEnergy);
     }
@@ -94,11 +98,11 @@ public class Office {
         return new ArrayList<>(handledClients);
     }
 
-    List<String> getClientsInQueue() {
+    public List<String> getClientsInQueue() {
         return clientsQueue.getAll().stream().map(client -> client.getType()).collect(Collectors.toList());
     }
 
-    int getNumberOfWorkers() {
+    public int getNumberOfWorkers() {
         return workers.size();
     }
 
@@ -122,7 +126,7 @@ public class Office {
                 .collect(Collectors.toList());
         report.numberOfBeers = clientsFactory.getCreatedClients().stream()
                 .filter(c -> c.getType() == student)
-                .map(c -> c.getWaitingTime())
+                .map(c -> c.getWaitingTime()/2)
                 .collect(Collectors.toList());
         report.currentWorkersActivities = workers.stream()
                 .map(worker -> worker.getCurrentActivity())
@@ -144,7 +148,7 @@ public class Office {
     public static class Builder {
         private int numberOfWorkers = 1;
         private int workersEnergy = 5;
-        private List<WorkerActivities> schedule = Arrays.asList(WorkerActivities.working);
+        private List<String> schedule = Arrays.asList(WorkerActivities.working);
 
         public Builder withNumberOfWorkers(int number) {
             numberOfWorkers = number;
@@ -156,7 +160,7 @@ public class Office {
             return this;
         }
 
-        public Builder withWorkersSchedule(WorkerActivities... schedule) {
+        public Builder withWorkersSchedule(String... schedule) {
             this.schedule = Arrays.asList(schedule);
             return this;
         }
