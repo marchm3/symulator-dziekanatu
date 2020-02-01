@@ -107,42 +107,7 @@ public class Office {
     }
 
     public Report getReport() {
-        Report report = new Report();
-        report.differentialsDegrees = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == professor)
-                .map(c -> c.getWaitingTime())
-                .collect(Collectors.toList());
-        report.numberOfExtraTasks = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == lecturer)
-                .mapToInt(c -> c.getWaitingTime())
-                .sum();
-        report.numberOfComplaints = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == friend)
-                .mapToInt(c -> c.getWaitingTime())
-                .sum();
-        report.gradeReductions = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == PhD)
-                .map(c -> c.getWaitingTime()/2.0)
-                .collect(Collectors.toList());
-        report.numberOfBeers = clientsFactory.getCreatedClients().stream()
-                .filter(c -> c.getType() == student)
-                .map(c -> c.getWaitingTime()/2)
-                .collect(Collectors.toList());
-        report.currentWorkersActivities = workers.stream()
-                .map(worker -> worker.getCurrentActivity())
-                .collect(Collectors.toList());
-        report.numberOfClientsInQueue = clientsQueue.getAll().size();
-        report.clientsTypeInQueueToNumberMap = clientsQueue.getAll().stream().map(client -> client.getType())
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        report.theoreticalWaitingTime = workers.stream()
-                .findFirst()
-                .map(worker -> worker.getMaxEnergy())
-                .map(maxEnergy -> clientsQueue.getAll().stream()
-                        .mapToInt(client -> client.getTheoreticalProcessTime(maxEnergy))
-                        .sum() / ((double)workers.size())
-                ).map(numberOfProcess -> (int)Math.ceil(numberOfProcess))
-                .orElse(-1);
-        return report;
+        return ReportGenerator.getReport(clientsFactory.getCreatedClients(), clientsQueue.getAll(), workers);
     }
 
     public static class Builder {
