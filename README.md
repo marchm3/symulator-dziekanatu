@@ -5,6 +5,7 @@ Aby rozpoczać symulacje należy wysłać POSTem konfiguracje na /start
 Aby wykonać ture należy wysłać zapytanie POSTem na /process
 
 W pliku example_1.json jest konfiguracja do symulacji z losowymi klientami
+
 W pliku example_2.json jest konfiguracja do symulacji z ustalonymi klientami
 
 /process zwraca raport o aktualnym stanie dziekanatu

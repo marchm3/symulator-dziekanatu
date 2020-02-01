@@ -10,7 +10,7 @@ public class BossTaskStrategy implements TaskStrategy {
     }
 
     public void provideWorker(Worker worker) {
-        if (worker.getCurrentActivity() == WorkerActivities.working) {
+        if (worker.getCurrentActivity().equals(WorkerActivities.working)) {
             worker.exhaust();
             numberOfProcess += 1;
         } else {
